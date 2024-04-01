@@ -28,7 +28,6 @@ def train(network, train_loader, optimizer):
             current = torch.from_numpy(current)
             data_n[m] = current.permute(2, 1, 0)
             data_n[m] = data_n[m].type(torch.FloatTensor)
-
         data_n = data_n.cuda()
         # data_n = data_n[:, 0, :, :].unsqueeze(1).cuda()
 
@@ -43,7 +42,9 @@ def train(network, train_loader, optimizer):
         target_n = torch.from_numpy(target_n).type(torch.FloatTensor).cuda()
 
         output = network(data_n)
+        print(output.shape)
         output = output.view(output.shape[0], -1)
+        print(output.shape)
         # target = target.view(target.shape[0], -1)
         loss = F.cross_entropy(output, target_n.long())
         # loss = F.nll_loss(output, target_n.long())
@@ -72,6 +73,7 @@ def accuracy(epoch_idx, test_loader, network, set_type = None):
         for data, target in test_loader:
 
             # data = data[:, 0, :, :].unsqueeze(1)  # 单通道对比实验
+            # data torch.Size([4, 3, 300, 20])
 
             target_n = np.zeros((target.shape[0],))
             for m in range(0, target.shape[0]):
@@ -79,7 +81,7 @@ def accuracy(epoch_idx, test_loader, network, set_type = None):
                     if target[m, 0, n] == 1:
                         target_n[m] = n
 
-            outputs = network(data)
+            outputs = network(data)         # torch.Size([4, 5])
             _, predicted = torch.max(outputs.squeeze(1).data, 1)
             # correct += (predicted == target).sum().item()
             for m in range(0, data.shape[0]):
@@ -91,7 +93,7 @@ def accuracy(epoch_idx, test_loader, network, set_type = None):
                 index_m[max_index] = 1
                 a = torch.from_numpy(index_m).unsqueeze(0).cuda()
                 b = target[m]
-                if torch.equal(a, b):
+                if torch.equal(a, b):   # 预测值和原始值是否一致
                     correct += 1
                     num_correct[int(target_n[m])] += 1
     for m in range(0, 5):
@@ -156,7 +158,7 @@ if __name__ == '__main__':
     # model_SPP.initialize_weights(model)
 
     ### Vit
-    model = model_Vit.SELF()
+    model = model_Vit.SELF()        # 选择模型
     model_Vit._init_vit_weights(model)
 
     # optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
@@ -185,7 +187,7 @@ if __name__ == '__main__':
     val_classify_corr_list_F = []
     val_classify_corr_list_6 = []
 
-    select_condition = "FUDS"
+    select_condition = "FUDS"   # 改变源域
 
     if select_condition == "UDDS":
         train_loader_s = train_loader
@@ -205,6 +207,7 @@ if __name__ == '__main__':
         train_accuracy, train_classify_corr = accuracy(epoch_idx=i, test_loader=train_loader_s, network=network, set_type="train")
         train_accuracy_list.append(train_accuracy)
         train_classify_corr_list.append(train_classify_corr)
+
         print("Testing in UDDS")
         val_accuracy, val_classify_corr = accuracy(epoch_idx=i, test_loader=val_loader, network=network, set_type="val")
         val_accuracy_list.append(val_accuracy)

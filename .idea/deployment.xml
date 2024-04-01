@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="Dong" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="Dong">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/yang7hi/batteryv2" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/结果汇总(Before).xlsx" />
+            <excludedPath local="true" path="$PROJECT_DIR$/迁移汇总.xlsx" />
+            <excludedPath local="true" path="$PROJECT_DIR$/结果汇总(After).xlsx" />
+            <excludedPath local="true" path="$PROJECT_DIR$/测试结果汇总.docx" />
+            <excludedPath local="true" path="$PROJECT_DIR$/数据集说明及故障实现.docx" />
+            <excludedPath local="true" path="$PROJECT_DIR$/故障检测论文初步.docx" />
+            <excludedPath local="true" path="$PROJECT_DIR$/原始数据汇总.xlsx" />
+            <excludedPath local="true" path="$PROJECT_DIR$/Visual_csv_and_pict" />
+            <excludedPath local="true" path="$PROJECT_DIR$/Result_pict" />
+            <excludedPath local="true" path="$PROJECT_DIR$/Fault_Visual" />
+            <excludedPath local="true" path="$PROJECT_DIR$/Data_enhance" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="battery@10.2.133.83:22 password">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="battery@10.2.133.83:22 password (2)">
+        <serverdata>
+          <mappings>
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
