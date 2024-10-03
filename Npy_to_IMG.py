@@ -1,12 +1,9 @@
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-import scipy.io as io
 import pandas as pd
-import os
-import math
 import torch
-import data_get
+from Processor import data_get
 
 ### UDDS DSOC故障
 # path = "./Npy/UDDS/Cor/UDDS_Cor_0627.npy"

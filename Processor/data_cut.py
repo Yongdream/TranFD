@@ -1,11 +1,5 @@
 import numpy as np
-from PIL import Image
-import matplotlib.pyplot as plt
-import scipy.io as io
-import pandas as pd
 import os
-import math
-import torch
 import data_get
 
 def Data_Cut_Saved_Npy(data_feature, path, Condition, Fault, start, win, filename):  # 数据矩阵/原始路径/工况词典/故障词典/起始时间/截取长度/截取步长
@@ -19,7 +13,7 @@ def Data_Cut_Saved_Npy(data_feature, path, Condition, Fault, start, win, filenam
         file_name = d_c + "_" + d_f + "_" + filename[9:-4] + "_" + str(start) + "-" + str(start + win)
     else:
         file_name = d_c + "_" + d_f + "_" + filename[-8:-4] + "_" + str(start) + "-" + str(start + win)
-    dir_path = "./Cut_Npy/" + d_c + "/" + d_f  # 存储路径
+    dir_path = "../Cut_Npy/" + d_c + "/" + d_f  # 存储路径
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
     final_save_path = dir_path + "/" + file_name
@@ -63,11 +57,11 @@ if __name__ == '__main__':
     Condition_d = ["FUDS", "UDDS", "US06"]  # 工况词典
     Fault_d = ["Cor", "Isc", "Noi", "Nor", "Vis"]
     Condition_selected = "US06"
-    Dst_path = "./Cut_Npy/" + Condition_selected + "/"
+    Dst_path = "../Cut_Npy/" + Condition_selected + "/"
     del_files(Dst_path)  # 清除原有数据
     print("Clean ok!")
     U_max, U_min, corr_min, diff_max = 4.3, 3.0, 0.0, 0.85  # 统一标准化参数
-    Origin_path = "./Npy/" + Condition_selected + "/"
+    Origin_path = "../Npy/" + Condition_selected + "/"
     for fault_index, Fault_name in enumerate(Fault_d):
         dst_dir = Origin_path + Fault_name + "/"
         FILE_list = os.listdir(dst_dir)

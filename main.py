@@ -1,16 +1,14 @@
 import torch
-from torch import nn
 import numpy as np
 import model_Conv
 import model_Vit
 import model_SPP
-import dataset_get
+from Processor import dataset_get
 import torch.nn.functional as F
-from PIL import Image
 import matplotlib.pyplot as plt
-import os
 import pandas as pd
 import tqdm
+import argparse
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -42,9 +40,9 @@ def train(network, train_loader, optimizer):
         target_n = torch.from_numpy(target_n).type(torch.FloatTensor).cuda()
 
         output = network(data_n)
-        print(output.shape)
+        # print(output.shape)
         output = output.view(output.shape[0], -1)
-        print(output.shape)
+        # print(output.shape)
         # target = target.view(target.shape[0], -1)
         loss = F.cross_entropy(output, target_n.long())
         # loss = F.nll_loss(output, target_n.long())
@@ -117,7 +115,23 @@ def accuracy(epoch_idx, test_loader, network, set_type = None):
 
     return correct / len(test_loader.dataset), corr_list
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='Training script with command line arguments')
+    parser.add_argument('--select_condition', type=str, choices=['UDDS', 'FUDS', 'US06'], default='FUDS',
+                        help='Choose the source domain')
+    parser.add_argument('--model', type=str, choices=['SPP', 'Conv', 'Vit'], default='Conv',
+                        help='Choose which model to use')
+    parser.add_argument('--save_model', action='store_true', help='Save model after training')
+    parser.add_argument('--save_res', action='store_true', help='Save results to CSV file')
+    parser.add_argument('--n_epochs', type=int, default=50, help='Number of epochs')
+    parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate')
+    parser.add_argument('--batch_size', type=int, default=32, help='Batch size')
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
+    args = parse_args()
+
     train_data, train_label, val_data, val_label = dataset_get.Generate_Dataset_from_Dir("./Dataset", "UDDS")
     train_data, train_label, val_data, val_label = torch.from_numpy(train_data), torch.from_numpy(
         train_label), torch.from_numpy(val_data), torch.from_numpy(val_label)
@@ -129,6 +143,7 @@ if __name__ == '__main__':
         train_label_6), torch.from_numpy(val_data_6), torch.from_numpy(val_label_6)
     print("Read OK!")
 
+    # Initialize datasets
     train_set = dataset_get.CustomedDataSet(train_x=train_data, train_y=train_label)
     val_set = dataset_get.CustomedDataSet(test_x=val_data, test_y=val_label, train=False, val=True)
     train_set_F = dataset_get.CustomedDataSet(train_x=train_data_F, train_y=train_label_F)
@@ -137,74 +152,60 @@ if __name__ == '__main__':
     val_set_6 = dataset_get.CustomedDataSet(test_x=val_data_6, test_y=val_label_6, train=False, val=True)
     print("Dataset OK!")
 
-    train_loader = dataset_get.DataLoader(dataset=train_set, batch_size=4, shuffle=True)
-    val_loader = dataset_get.DataLoader(dataset=val_set, batch_size=4, shuffle=False)
-    train_loader_F = dataset_get.DataLoader(dataset=train_set_F, batch_size=4, shuffle=True)
-    val_loader_F = dataset_get.DataLoader(dataset=val_set_F, batch_size=4, shuffle=False)
-    train_loader_6 = dataset_get.DataLoader(dataset=train_set_6, batch_size=4, shuffle=True)
-    val_loader_6 = dataset_get.DataLoader(dataset=val_set_6, batch_size=4, shuffle=False)
+    # Initialize DataLoaders
+    train_loader = dataset_get.DataLoader(dataset=train_set, batch_size=args.batch_size, shuffle=True)
+    val_loader = dataset_get.DataLoader(dataset=val_set, batch_size=args.batch_size, shuffle=False)
+    train_loader_F = dataset_get.DataLoader(dataset=train_set_F, batch_size=args.batch_size, shuffle=True)
+    val_loader_F = dataset_get.DataLoader(dataset=val_set_F, batch_size=args.batch_size, shuffle=False)
+    train_loader_6 = dataset_get.DataLoader(dataset=train_set_6, batch_size=args.batch_size, shuffle=True)
+    val_loader_6 = dataset_get.DataLoader(dataset=val_set_6, batch_size=args.batch_size, shuffle=False)
     print("DataLoader OK!")
 
-    # learning_rate = 1e-5
-    # batch_size = 32
-    n_epochs = 50
+    # Select model based on argument
+    if args.model == 'SPP':
+        model = model_SPP.SELF()
+        model_SPP.initialize_weights(model)
+    elif args.model == 'Conv':
+        model = model_Conv.SELF()
+        model_Conv.initialize_weights(model)
+    elif args.model == 'Vit':
+        model = model_Vit.SELF()
+        model_Vit._init_vit_weights(model)
 
-    # ### Conv
-    # model = model_Conv.SELF()
-    # model_Conv.initialize_weights(model)
-
-    # ### SPP
-    # model = model_SPP.SELF()
-    # model_SPP.initialize_weights(model)
-
-    ### Vit
-    model = model_Vit.SELF()        # 选择模型
-    model_Vit._init_vit_weights(model)
-
-    # optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
-    optimizer = torch.optim.Adam(model.parameters(),
-                lr=0.001,
-                betas=(0.9, 0.999),
-                eps=1e-08,
-                weight_decay=0,
-                amsgrad=False)
+    optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate, betas=(0.9, 0.999), eps=1e-08,
+                                 weight_decay=0, amsgrad=False)
     scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.96)
     network = model.to(device)
     network.double()
 
-    ### Loss List
     loss_ave_list = []
-    ### Train Accuracy
     train_accuracy_list = []
-    ### Val Accuracy
     val_accuracy_list = []
     val_accuracy_list_F = []
     val_accuracy_list_6 = []
-    ### Classify Accuracy(Train)
     train_classify_corr_list = []
-    ### Classify Accuracy(Val)
     val_classify_corr_list = []
     val_classify_corr_list_F = []
     val_classify_corr_list_6 = []
 
-    select_condition = "FUDS"   # 改变源域
-
-    if select_condition == "UDDS":
+    # Select condition based on command line argument
+    if args.select_condition == "UDDS":
         train_loader_s = train_loader
-    if select_condition == "FUDS":
+    elif args.select_condition == "FUDS":
         train_loader_s = train_loader_F
-    if select_condition == "US06":
+    elif args.select_condition == "US06":
         train_loader_s = train_loader_6
 
-    for i in range(1, n_epochs + 1):
-        print("Epoch %d\n-------------------------------" % i)
+    for i in range(1, args.n_epochs + 1):
+        print(f"Epoch {i}\n-------------------------------")
         network.train()
 
-        loss_ave = train(train_loader=train_loader_s, optimizer=optimizer, network=network)  # Choose Train Loader
-
+        loss_ave = train(train_loader=train_loader_s, optimizer=optimizer, network=network)
         loss_ave_list.append(loss_ave)
+
         network.eval()
-        train_accuracy, train_classify_corr = accuracy(epoch_idx=i, test_loader=train_loader_s, network=network, set_type="train")
+        train_accuracy, train_classify_corr = accuracy(epoch_idx=i, test_loader=train_loader_s, network=network,
+                                                       set_type="train")
         train_accuracy_list.append(train_accuracy)
         train_classify_corr_list.append(train_classify_corr)
 
@@ -212,53 +213,45 @@ if __name__ == '__main__':
         val_accuracy, val_classify_corr = accuracy(epoch_idx=i, test_loader=val_loader, network=network, set_type="val")
         val_accuracy_list.append(val_accuracy)
         val_classify_corr_list.append(val_classify_corr)
+
         print("Testing in FUDS")
-        val_accuracy_F, val_classify_corr_F = accuracy(epoch_idx=i, test_loader=val_loader_F, network=network, set_type="val")
+        val_accuracy_F, val_classify_corr_F = accuracy(epoch_idx=i, test_loader=val_loader_F, network=network,
+                                                       set_type="val")
         val_accuracy_list_F.append(val_accuracy_F)
         val_classify_corr_list_F.append(val_classify_corr_F)
+
         print("Testing in US06")
-        val_accuracy_6, val_classify_corr_6 = accuracy(epoch_idx=i, test_loader=val_loader_6, network=network, set_type="val")
+        val_accuracy_6, val_classify_corr_6 = accuracy(epoch_idx=i, test_loader=val_loader_6, network=network,
+                                                       set_type="val")
         val_accuracy_list_6.append(val_accuracy_6)
         val_classify_corr_list_6.append(val_classify_corr_6)
-    # torch.save(network.state_dict(), "./Model/Default.pt")
 
-    train_classify_corr_list = np.array(train_classify_corr_list)
-    val_classify_corr_list = np.array(val_classify_corr_list)
-    val_classify_corr_list_F = np.array(val_classify_corr_list_F)
+    # Save model if --save_model is specified
+    if args.save_model:
+        torch.save(network.state_dict(), "./Model/Default.pt")
 
-    # plt.plot(range(len(loss_ave_list)), loss_ave_list[:], color='b', label='Train_Loss')
-    # plt.legend()
-    # plt.savefig("./Result_pict/Loss_V1_l2_default.png")
-    # plt.show()
-
-    plt.plot(range(len(train_accuracy_list)), train_accuracy_list[:], color='b', label='Train_accuracy')
-    plt.plot(range(len(train_accuracy_list)), val_accuracy_list[:], color='g', label='UDDS_Val_accuracy')
-    plt.plot(range(len(train_accuracy_list)), val_accuracy_list_F[:], color='r', label='FUDS_Val_accuracy')
-    plt.plot(range(len(train_accuracy_list)), val_accuracy_list_6[:], color='brown', label='US06_Val_accuracy')
+    # Plot accuracy and loss
+    plt.plot(range(len(train_accuracy_list)), train_accuracy_list, color='b', label='Train_accuracy')
+    plt.plot(range(len(val_accuracy_list)), val_accuracy_list, color='g', label='UDDS_Val_accuracy')
+    plt.plot(range(len(val_accuracy_list_F)), val_accuracy_list_F, color='r', label='FUDS_Val_accuracy')
+    plt.plot(range(len(val_accuracy_list_6)), val_accuracy_list_6, color='brown', label='US06_Val_accuracy')
     plt.legend()
-    # plt.savefig("./Result_pict/Result_pict_Vit_Embed_64_Depth_3.png")
     plt.show()
 
-    count = 1
-    ### Save Data
-    All_list = []
-    for i in range(0, n_epochs):
-        All_list.append([loss_ave_list[i], train_accuracy_list[i], val_accuracy_list[i], val_accuracy_list_F[i], val_accuracy_list_6[i]])
+    # Save results
+    if args.save_res:
+        count = 1
+        All_list = [
+            [loss_ave_list[i], train_accuracy_list[i], val_accuracy_list[i], val_accuracy_list_F[i],
+             val_accuracy_list_6[i]]
+            for i in range(args.n_epochs)]
 
-    df1 = pd.DataFrame(data=All_list,
-                       columns=['loss', 'Train', 'Val[UDDS]', 'Val[FUDS]', 'Val[US06]'])
-    df1.to_csv('./Result_csv/Vit_Square/' + select_condition + '_Res_' + str(count) + '.csv', index=False)
+        df1 = pd.DataFrame(All_list, columns=['loss', 'Train', 'Val[UDDS]', 'Val[FUDS]', 'Val[US06]'])
 
-    All_classify_list = []
-    for i in range(0, n_epochs):
-        All_classify_list.append([train_classify_corr_list[i][0], train_classify_corr_list[i][1], train_classify_corr_list[i][2], train_classify_corr_list[i][3], train_classify_corr_list[i][4],
-                                  val_classify_corr_list[i][0],   val_classify_corr_list[i][1],   val_classify_corr_list[i][2],   val_classify_corr_list[i][3],   val_classify_corr_list[i][4],
-                                  val_classify_corr_list_F[i][0], val_classify_corr_list_F[i][1], val_classify_corr_list_F[i][2], val_classify_corr_list_F[i][3], val_classify_corr_list_F[i][4],
-                                  val_classify_corr_list_6[i][0], val_classify_corr_list_6[i][1], val_classify_corr_list_6[i][2], val_classify_corr_list_6[i][3], val_classify_corr_list_6[i][4]])
-    df2 = pd.DataFrame(data=All_classify_list,
-                       columns=['Cor[Train]', 'ISC[Train]', 'Noi[Train]', 'Nor[Train]', 'Vis[Train]',
-                                'Cor[UDDS]', 'ISC[UDDS]', 'Noi[UDDS]', 'Nor[UDDS]', 'Vis[UDDS]',
-                                'Cor[FUDS]', 'ISC[FUDS]', 'Noi[FUDS]', 'Nor[FUDS]', 'Vis[FUDS]',
-                                'Cor[US06]', 'ISC[US06]', 'Noi[US06]', 'Nor[US06]', 'Vis[US06]'])
-    df2.to_csv('./Result_csv/Vit_Square/' + select_condition + '_Res_Classify_' + str(count) + '.csv', index=False)
+        # 动态生成保存路径，使用<model>_Square作为文件夹名称
+        save_path = f'./Result_csv/{args.model}_Square/{args.select_condition}_Res_{count}.csv'
+
+        # 检查是否保存
+        df1.to_csv(save_path, index=False)
+        print(f"Results saved to {save_path}")
 

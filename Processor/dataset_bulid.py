@@ -1,13 +1,6 @@
 import random
 import numpy as np
-from PIL import Image
-import matplotlib.pyplot as plt
-import scipy.io as io
-import pandas as pd
 import os
-import math
-import torch
-import data_get
 import shutil
 
 def del_files(dir_path):
@@ -39,10 +32,10 @@ Condition_d = ["FUDS", "UDDS", "US06"]  # 工况词典
 Fault_d = ["Cor", "Isc", "Noi", "Nor", "Vis"]
 Condition_selected = "US06"  # 选择要处理的工况
 
-Dst_path = "./Dataset/" + Condition_selected + "/"  # 基础数据及保存目录
+Dst_path = "../Dataset/" + Condition_selected + "/"  # 基础数据及保存目录
 del_files(Dst_path)  # 清除原有数据
 print("Clean ok!")
-Origin_path = "./Cut_Npy/" + Condition_selected + "/"  # 基础读取目录
+Origin_path = "../Cut_Npy/" + Condition_selected + "/"  # 基础读取目录
 for fault_index, Fault_name in enumerate(Fault_d):  # 遍历每种故障
     dst_dir = Origin_path + Fault_name + "/"  # 工况/故障文件夹目录
     FILE_list = os.listdir(dst_dir)  # 获取目录下的文件名列表

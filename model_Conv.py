@@ -28,7 +28,7 @@ class SELF(nn.Module):
         super(SELF, self).__init__()
         self.name = 'SELF'
 
-        self.cnn1 = nn.Conv2d(1, 16, 3)  # 对比实验修改首个通道数即可
+        self.cnn1 = nn.Conv2d(3, 16, 3)  # 对比实验修改首个通道数即可
         # self.bn1 = nn.BatchNorm2d(num_features=16)
         self.pooling1 = nn.MaxPool2d(2, 2)
         self.cnn2 = nn.Conv2d(16, 32, 3)

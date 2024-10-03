@@ -127,7 +127,7 @@ def Get_Data(path):  # 获取指定路径的原始数据、相关系数及压差
 
     df1 = pd.DataFrame(data=All_list,
                        columns=['Fault cell', 'Normal cell'])
-    df1.to_csv('./Result_csv/Low_SOC.csv', index=False)
+    df1.to_csv('../Result_csv/Low_SOC.csv', index=False)
 
     return data_feature, U_max, U_min, corr_min, diff_max
 
@@ -146,7 +146,7 @@ def Data_Origin_Saved_Npy(data_feature, path, Condition, Fault):  # 数据矩阵
         if f_name in path:
             d_f = f_name  # 故障名
     file_name = d_c + "_" + d_f + "_" + path[-8:-4]  # 原文件日期部分
-    dir_path = "./Npy/" + d_c + "/" + d_f  # 根据工况名和故障类型进行文件夹命名
+    dir_path = "../Npy/" + d_c + "/" + d_f  # 根据工况名和故障类型进行文件夹命名
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)  # 创建文件夹
     final_save_path = dir_path + "/" + file_name  # 存储路径
@@ -157,96 +157,37 @@ def Data_Origin_Saved_Npy(data_feature, path, Condition, Fault):  # 数据矩阵
     print("Total Length:" + str(data_feature.shape[1]))
     print("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*")
 
+
 if __name__ == '__main__':
-    # path_n = "./Origin/UDDS/Normal/UDDS_Nor_0328.csv"  # 文件名命名最后4位需为日期，且同一工况同一故障最好不得在一天内重复
-    # path_n = "./Origin/UDDS/Normal/UDDS_Nor_0411.csv"
-    # path_n = "./Origin/UDDS/Corr/UDDS_Cor_0627.csv"
-    # path_n = "./Origin/UDDS/Corr/UDDS_Cor_0628.csv"
-    path_n = "./Origin/UDDS/ISC/UDDS_Isc_5ohm_0628.csv"  # 5欧姆ISC
-    # path_n = "./Origin/UDDS/ISC/UDDS_Isc_5ohm_0629.csv"
-    # path_n = "./Origin/UDDS/Corr/UDDS_Cor_0629.csv"
-    # path_n = "./Origin/UDDS/ISC/UDDS_Isc_10ohm_0630.csv"  # 10欧姆ISC
-    # path_n = "./Origin/FUDS/Corr/FUDS_Cor_0630.csv"
-    # path_n = "./Origin/FUDS/Normal/FUDS_Nor_0704.csv"
-    # path_n = "./Origin/UDDS/Normal/UDDS_Nor_0704.csv"
-    # path_n = "./Origin/FUDS/Normal/FUDS_Nor_0705.csv"
-    # path_n = "./Origin/FUDS/Normal/FUDS_Nor_0706.csv"
-    # path_n = "./Origin/UDDS/Normal/UDDS_Nor_0706.csv"
-    # path_n = "./Origin/FUDS/Normal/FUDS_Nor_0707.csv"
-    # path_n = "./Origin/UDDS/Normal/UDDS_Nor_0707.csv"
-    # path_n = "./Origin/FUDS/Normal/FUDS_Nor_0708.csv"
-    # path_n = "./Origin/UDDS/Normal/UDDS_Nor_0708.csv"
-    # path_n = "./Origin/FUDS/Normal/FUDS_Nor_0711.csv"
-    # path_n = "./Origin/UDDS/Normal/UDDS_Nor_0711.csv"
-    # path_n = "./Origin/FUDS/Normal/FUDS_Nor_0712.csv"
-    # path_n = "./Origin/UDDS/Normal/UDDS_Nor_0712.csv"
-    # path_n = "./Origin/FUDS/Normal/FUDS_Nor_0713.csv"
-    # path_n = "./Origin/UDDS/Normal/UDDS_Nor_0713.csv"
-    # path_n = "./Origin/FUDS/Normal/FUDS_Nor_0714.csv"
-    # path_n = "./Origin/FUDS/Isc/FUDS_Isc_5ohm_0714.csv"
-    # path_n = "./Origin/FUDS/Corr/FUDS_Cor_0715.csv"
-    # path_n = "./Origin/FUDS/Isc/FUDS_Isc_10ohm_0715.csv"
-    # path_n = "./Origin/FUDS/Corr/FUDS_Cor_0718.csv"
-    # path_n = "./Origin/FUDS/Isc/FUDS_Isc_1ohm_0718.csv"
-    # path_n = "./Origin/UDDS/ISC/UDDS_Isc_1ohm_0718.csv"
-    # path_n = "./Origin/US06/Normal/US06_Nor_0907.csv"
-    # path_n = "./Origin/US06/Isc/US06_Isc_1ohm_0907.csv"
-    # path_n = "./Origin/US06/Corr/US06_Cor_0908.csv"
-    # path_n = "./Origin/US06/Corr/US06_Cor_0909.csv"
-    # path_n = "./Origin/US06/Normal/US06_Nor_0919.csv"
-    # path_n = "./Origin/US06/Normal/US06_Nor_0926.csv"
-    # path_n = "./Origin/US06/Normal/US06_Nor_0927.csv"
-    # path_n = "./Origin/US06/Normal/US06_Nor_0928.csv"
-    # path_n = "./Origin/US06/Normal/US06_Nor_0929.csv"
-    # path_n = "./Origin/US06/Normal/US06_Nor_0930.csv"
-    # path_n = "./Origin/US06/Normal/US06_Nor_1008.csv"
-    # path_n = "./Origin/US06/Isc/US06_Isc_5ohm_1008.csv"
-    # path_n = "./Origin/US06/Normal/US06_Nor_1009.csv"
-    # path_n = "./Origin/US06/Isc/US06_Isc_10ohm_1009.csv"
-    # path_n = "./Origin/US06/Corr/US06_Cor_1009.csv"
+    base_dir = "../Origin"
 
+    # 遍历最底层的所有 CSV 文件
+    for root, dirs, files in os.walk(base_dir):
+        for file in files:
+            if file.endswith(".csv"):  # 只处理 CSV 文件
+                path_n = os.path.join(root, file)
 
-    # path_n = "./short_term_test/Abnormal_5x5_0330.csv"  # 短期故障的可视化尝试
-    path_n = "./short_term_test/Abnormal_5x1_0421_fuds.csv"  # FUDS短期故障的可视化尝试
+                data_feature, U_max, U_min, corr_min, diff_max = Get_Data(path_n)
+                print("U_max:" + str(U_max) + " U_min:" + str(U_min) + " corr_min:" + str(corr_min) + " diff_max:" + str(diff_max))
+                print("Data Get OK!")
 
-    data_feature, U_max, U_min, corr_min, diff_max = Get_Data(path_n)
-    print("U_max:" + str(U_max) + " U_min:" + str(U_min) + " corr_min:" + str(corr_min) + " diff_max:" + str(diff_max))
-    # U_max, U_min, corr_min, diff_max = Data_Feature_Max_or_Min(data_feature)  # 使用函数读取.npy文件时可用
-    # print("U_max:" + str(U_max) + " U_min:" + str(U_min) + " corr_min:" + str(corr_min) + " diff_max:" + str(diff_max))
-    print("Data Get OK!")
+                U_max, U_min, corr_min, diff_max = 4.3, 3.0, 0.0, 0.85  # 统一标准化参数
+                data_sample = Normalize(data_feature, U_max, U_min, corr_min, diff_max)  # 标准化
+                
+                print("SAMPLE")
+                sample_index = 1
+                plt.plot(range(len(data_sample[0])), data_sample[0, :, sample_index], color='b', label='Voltage')
+                plt.plot(range(len(data_sample[0])), data_sample[1, :, sample_index], color='g', label='Corr')
+                plt.plot(range(len(data_sample[0])), data_sample[2, :, sample_index], color='r', label='Diff')
+                plt.legend()
+                plt.show()
 
-    # Condition = ["FUDS", "UDDS", "US06"]  # 工况词典
-    # Fault = ["Cor", "Isc", "Noi", "Nor", "Vis"]  # 相关性/微短路/噪声/正常/粘滞
-    # for _, c_name in enumerate(Condition):
-    #     if c_name in path_n:
-    #         d_c = c_name  # 工况名
-    # for index, f_name in enumerate(Fault):
-    #     if f_name in path_n:
-    #         d_f = f_name  # 故障名
-    # file_name = d_c + "_" + d_f + "_" + path_n[-8:-4]  # 原文件日期部分
-    # final_save_path = "./Npy/" + d_c + "/" + d_f + "/" + file_name
-    # np.save(final_save_path, data_feature)
-    # print("Data Saved Successfully!")
-    # Data_Origin_Saved_Npy(data_feature, path_n, Condition, Fault)
-
-    U_max, U_min, corr_min, diff_max = 4.3, 3.0, 0.0, 0.85  # 统一标准化参数
-    data_sample = Normalize(data_feature, U_max, U_min, corr_min, diff_max)  # 标准化
-    print("SAMPLE")
-    sample_index = 1
-    plt.plot(range(len(data_sample[0])), data_sample[0, :, sample_index], color='b', label='Voltage')
-    plt.plot(range(len(data_sample[0])), data_sample[1, :, sample_index], color='g', label='Corr')
-    plt.plot(range(len(data_sample[0])), data_sample[2, :, sample_index], color='r', label='Diff')
-    plt.legend()
-    # plt.savefig("./Result_pict/Result_pict_Vit_Embed_64_Depth_3.png")
-    plt.show()
-
-    data = Normalize(data_feature, U_max, U_min, corr_min, diff_max, pict_mode=True)
-    data_o = Normalize(data_feature, U_max, U_min, corr_min, diff_max)
-    data = torch.from_numpy(data)
-    data = data.permute(2, 1, 0)  # 序号/时间/通道
-    data = np.array(data)
-    np.random.shuffle(data)  # 对序号进行打乱
-    data = data[:, :, :]
-    pict = Image.fromarray(np.uint8(data), mode="RGB")
-    pict.show()
-    print("Image Generate OK!")
+                data = Normalize(data_feature, U_max, U_min, corr_min, diff_max, pict_mode=True)
+                data_o = Normalize(data_feature, U_max, U_min, corr_min, diff_max)
+                data = torch.from_numpy(data)
+                data = data.permute(2, 1, 0)  # 序号/时间/通道
+                data = np.array(data)
+                np.random.shuffle(data)  # 对序号进行打乱
+                pict = Image.fromarray(np.uint8(data), mode="RGB")
+                pict.show()
+                print("Image Generate OK!")

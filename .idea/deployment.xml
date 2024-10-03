@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="Always" serverName="Dong" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="Always" serverName="Dong" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
+    <option name="confirmBeforeUploading" value="false" />
     <serverData>
       <paths name="Dong">
         <serverdata>
@@ -22,14 +23,24 @@
           </excludedPaths>
         </serverdata>
       </paths>
-      <paths name="battery@10.2.133.83:22 password">
+      <paths name="user@10.2.133.189:22 password">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>
-      <paths name="battery@10.2.133.83:22 password (2)">
+      <paths name="user@10.2.133.189:22 password (2)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/user/yang7hi/batteryv2" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/Result_csv" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+      <paths name="user@10.2.133.189:22 password (3)">
         <serverdata>
           <mappings>
             <mapping local="$PROJECT_DIR$" web="/" />

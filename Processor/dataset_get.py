@@ -80,7 +80,7 @@ def Generate_Dataset_from_Dir(path, condition):
     return train_data, train_label, val_data, val_label
 
 if __name__ == '__main__':
-    train_data, train_label, val_data, val_label = Generate_Dataset_from_Dir("./Dataset", "UDDS")
+    train_data, train_label, val_data, val_label = Generate_Dataset_from_Dir("../Dataset", "UDDS")
     train_data, train_label, val_data, val_label = torch.from_numpy(train_data), torch.from_numpy(train_label), torch.from_numpy(val_data), torch.from_numpy(val_label)
     train_data_a = []
     for i in range(0, len(train_data)):

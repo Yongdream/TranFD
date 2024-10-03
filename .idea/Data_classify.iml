@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="PYTHON_MODULE" version="4">
   <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Remote Python 3.7.16 (sftp://user@10.2.133.189:22/home/user/anaconda3/envs/yang/bin/python)" jdkType="Python SDK" />
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/Cut_Npy" />
+      <excludeFolder url="file://$MODULE_DIR$/Data_enhance" />
+      <excludeFolder url="file://$MODULE_DIR$/Dataset" />
+      <excludeFolder url="file://$MODULE_DIR$/Fault_Visual" />
+      <excludeFolder url="file://$MODULE_DIR$/Origin" />
+      <excludeFolder url="file://$MODULE_DIR$/Visual_csv_and_pict" />
+      <excludeFolder url="file://$MODULE_DIR$/Npy" />
+    </content>
+    <orderEntry type="jdk" jdkName="yang_IFD" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

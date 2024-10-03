@@ -84,37 +84,37 @@ class SELF(nn.Module):
 
         return x
 
-    def __init__(self, ):
-        super(SELF, self).__init__()
-        self.name = 'SELF'
+    # def __init__(self, ):
+    #     super(SELF, self).__init__()
+    #     self.name = 'SELF'
+    #
+    #     self.cnn1 = nn.Conv2d(1, 16, 3)  # 对比实验修改首个通道数即可
+    #     self.cnn2 = nn.Conv2d(16, 32, 3)
+    #
+    #     self.spp = SPPLayer(num_levels=3)
+    #
+    #     self.lin1 = nn.Linear(448, 1000)
+    #     self.dropout1 = nn.Dropout(0.4)
+    #     self.dropout2 = nn.Dropout(0.4)
+    #     self.lin2 = nn.Linear(1000, 5)
+    #
+    # def forward(self, x):
+    #     x = self.cnn1(x)
+    #     x = self.cnn2(x)
+    #
+    #     x = self.spp(x)
+    #
+    #     x = self.dropout1(x)
+    #     x = self.lin1(x)
+    #     x = self.dropout2(x)
+    #     x = self.lin2(x)
+    #     x = x.view(x.shape[0], 1, -1)
+    #
+    #     return x
 
-        self.cnn1 = nn.Conv2d(1, 16, 3)  # 对比实验修改首个通道数即可
-        self.cnn2 = nn.Conv2d(16, 32, 3)
 
-        self.spp = SPPLayer(num_levels=3)
-
-        self.lin1 = nn.Linear(448, 1000)
-        self.dropout1 = nn.Dropout(0.4)
-        self.dropout2 = nn.Dropout(0.4)
-        self.lin2 = nn.Linear(1000, 5)
-
-    def forward(self, x):
-        x = self.cnn1(x)
-        x = self.cnn2(x)
-
-        x = self.spp(x)
-
-        x = self.dropout1(x)
-        x = self.lin1(x)
-        x = self.dropout2(x)
-        x = self.lin2(x)
-        x = x.view(x.shape[0], 1, -1)
-
-        return x
-
-
-if __name__ == '__main__':
-    test = torch.randn(32, 3, 300, 20)
-    model = SELF()
-    output = model(test)
-    print(output.shape)
+# if __name__ == '__main__':
+#     test = torch.randn(32, 3, 300, 20)
+#     model = SELF()
+#     output = model(test)
+#     print(output.shape)
