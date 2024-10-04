@@ -71,13 +71,16 @@ def Get_Data_Len(path):
     return len_d
 
 
-def Get_Data(path, T_begin, T_end):  # 获取指定路径的原始数据、相关系数及压差绝对值矩阵，并输出相关系数最小值及压差绝对值最大值
+def Get_Data(path, T_begin, T_end, mode):  # 获取指定路径的原始数据、相关系数及压差绝对值矩阵，并输出相关系数最小值及压差绝对值最大值
     file = os.path.join(path)
     data_all = pd.read_csv(file).dropna()  # 读取csv文件，丢弃NaN数据
-    U_5001 = np.array(data_all['CH5001'])[T_begin:T_end]
 
-    # 使用 signal_stick 处理粘滞
-    U_5001 = signal_stick(U_5001)
+    U_5001 = np.array(data_all['CH5001'])[T_begin:T_end]
+    if mode == "Vis":
+        U_5001 = signal_stick(U_5001)   # 使用 signal_stick 处理粘滞
+    elif mode == "Noi":
+        U_5001 = Add_Noise(U_5001, 0, 0.05)  # 噪声（记得修改存储路径）
+
     U_5002 = np.array(data_all['CH5002'])[T_begin:T_end]
     U_5003 = np.array(data_all['CH5003'])[T_begin:T_end]
     U_5004 = np.array(data_all['CH5004'])[T_begin:T_end]
@@ -164,9 +167,12 @@ def Get_Data(path, T_begin, T_end):  # 获取指定路径的原始数据、相�
              abs(U_5017[i] - AVE[i]), abs(U_5018[i] - AVE[i]), abs(U_5019[i] - AVE[i]), abs(U_5020[i] - AVE[i])])
     data_diff = np.array(data_diff)
     diff_max = np.max(data_diff)
-
     data = data[win:]  # 由于计算了相关系数截取了时间窗，因此数据长度截短
+
     data_feature = np.array([data, data_corr, data_diff])
+
+    # 消融实验！特征工程
+    # data_feature = np.array([data])
 
     return data_feature, U_max, U_min, corr_min, diff_max
 
@@ -219,16 +225,18 @@ def process_data(path_n, mode="Vis"):
 
     if mode == "Vis":  # 粘滞故障模式
         # 一次性处理整个数据
-        data_feature, U_max, U_min, corr_min, diff_max = Get_Data(path_n, 0, len_d)
+        data_feature, U_max, U_min, corr_min, diff_max = Get_Data(path_n, 0, len_d, mode)
         print(f"Data Get OK! U_max: {U_max}, U_min: {U_min}, corr_min: {corr_min}, diff_max: {diff_max}")
+        data_sample = Normalize(data_feature, U_max, U_min, corr_min, diff_max)  # 标准化
 
-        # 保存数据为单个.npy文件
-        Data_Origin_Saved_Npy(data_feature, path_n, Condition, Fault, "Vis", 0, len_d)
+        Data_Origin_Saved_Npy(data_sample, path_n, Condition, Fault, "Vis", 0, len_d)
 
     elif mode == "Noi":  # 噪声处理模式
-        data_feature, U_max, U_min, corr_min, diff_max = Get_Data(path_n, 0, len_d)
+        data_feature, U_max, U_min, corr_min, diff_max = Get_Data(path_n, 0, len_d, mode)
         print(f"Data Get OK! U_max: {U_max}, U_min: {U_min}, corr_min: {corr_min}, diff_max: {diff_max}")
-        Data_Origin_Saved_Npy(data_feature, path_n, Condition, Fault, "Noi", 0, len_d)
+        data_sample = Normalize(data_feature, U_max, U_min, corr_min, diff_max)  # 标准化
+
+        Data_Origin_Saved_Npy(data_sample, path_n, Condition, Fault, "Noi", 0, len_d)
     else:
         print("Invalid mode selected.")
 
@@ -239,10 +247,11 @@ if __name__ == '__main__':
     # 遍历OriginV文件夹下所有子文件夹
     for root, dirs, files in os.walk(base_path):
         for file in files:
-            if file.endswith(".csv") and "Vis" in root:  # 噪声模拟修改为 "Noi"
+            if file.endswith(".csv") and "Vis" in root:
                 file_path = os.path.join(root, file)
                 # 粘滞调用
                 process_data(file_path, mode="Vis")
-
+            elif file.endswith(".csv") and "Noi" in root:
+                file_path = os.path.join(root, file)
                 # 噪声调用
-                # process_data(file_path, mode="Noi")
+                process_data(file_path, mode="Noi")

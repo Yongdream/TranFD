@@ -8,6 +8,6 @@ models=("SPP" "Conv" "Vit")
 for condition in "${select_conditions[@]}"; do
     for model in "${models[@]}"; do
         # 运行 Python 脚本
-        python main.py --select_condition "$condition" --model "$model" --save_model --save_res
+        python main.py --select_condition "$condition" --model "$model" --save_model --save_res --counts 1004
     done
 done

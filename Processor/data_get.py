@@ -174,20 +174,20 @@ if __name__ == '__main__':
                 U_max, U_min, corr_min, diff_max = 4.3, 3.0, 0.0, 0.85  # 统一标准化参数
                 data_sample = Normalize(data_feature, U_max, U_min, corr_min, diff_max)  # 标准化
                 
-                print("SAMPLE")
-                sample_index = 1
-                plt.plot(range(len(data_sample[0])), data_sample[0, :, sample_index], color='b', label='Voltage')
-                plt.plot(range(len(data_sample[0])), data_sample[1, :, sample_index], color='g', label='Corr')
-                plt.plot(range(len(data_sample[0])), data_sample[2, :, sample_index], color='r', label='Diff')
-                plt.legend()
-                plt.show()
-
-                data = Normalize(data_feature, U_max, U_min, corr_min, diff_max, pict_mode=True)
-                data_o = Normalize(data_feature, U_max, U_min, corr_min, diff_max)
-                data = torch.from_numpy(data)
-                data = data.permute(2, 1, 0)  # 序号/时间/通道
-                data = np.array(data)
-                np.random.shuffle(data)  # 对序号进行打乱
-                pict = Image.fromarray(np.uint8(data), mode="RGB")
-                pict.show()
-                print("Image Generate OK!")
+                # print("SAMPLE")
+                # sample_index = 1
+                # plt.plot(range(len(data_sample[0])), data_sample[0, :, sample_index], color='b', label='Voltage')
+                # plt.plot(range(len(data_sample[0])), data_sample[1, :, sample_index], color='g', label='Corr')
+                # plt.plot(range(len(data_sample[0])), data_sample[2, :, sample_index], color='r', label='Diff')
+                # plt.legend()
+                # plt.show()
+                #
+                # data = Normalize(data_feature, U_max, U_min, corr_min, diff_max, pict_mode=True)
+                # data_o = Normalize(data_feature, U_max, U_min, corr_min, diff_max)
+                # data = torch.from_numpy(data)
+                # data = data.permute(2, 1, 0)  # 序号/时间/通道
+                # data = np.array(data)
+                # np.random.shuffle(data)  # 对序号进行打乱
+                # pict = Image.fromarray(np.uint8(data), mode="RGB")
+                # pict.show()
+                # print("Image Generate OK!")

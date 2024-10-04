@@ -126,6 +126,7 @@ def parse_args():
     parser.add_argument('--n_epochs', type=int, default=50, help='Number of epochs')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate')
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size')
+    parser.add_argument('--counts', type=int, default=32, help=' ')
     return parser.parse_args()
 
 
@@ -236,11 +237,11 @@ if __name__ == '__main__':
     plt.plot(range(len(val_accuracy_list_F)), val_accuracy_list_F, color='r', label='FUDS_Val_accuracy')
     plt.plot(range(len(val_accuracy_list_6)), val_accuracy_list_6, color='brown', label='US06_Val_accuracy')
     plt.legend()
-    plt.show()
+    # plt.show()
 
     # Save results
     if args.save_res:
-        count = 1
+        count = args.counts
         All_list = [
             [loss_ave_list[i], train_accuracy_list[i], val_accuracy_list[i], val_accuracy_list_F[i],
              val_accuracy_list_6[i]]
@@ -253,5 +254,26 @@ if __name__ == '__main__':
 
         # 检查是否保存
         df1.to_csv(save_path, index=False)
-        print(f"Results saved to {save_path}")
+        print(f"Successfully Results saved to {save_path}")
+
+        All_classify_list = []
+        for i in range(0, args.n_epochs):
+            All_classify_list.append(
+                [train_classify_corr_list[i][0], train_classify_corr_list[i][1], train_classify_corr_list[i][2],
+                 train_classify_corr_list[i][3], train_classify_corr_list[i][4],
+                 val_classify_corr_list[i][0], val_classify_corr_list[i][1], val_classify_corr_list[i][2],
+                 val_classify_corr_list[i][3], val_classify_corr_list[i][4],
+                 val_classify_corr_list_F[i][0], val_classify_corr_list_F[i][1], val_classify_corr_list_F[i][2],
+                 val_classify_corr_list_F[i][3], val_classify_corr_list_F[i][4],
+                 val_classify_corr_list_6[i][0], val_classify_corr_list_6[i][1], val_classify_corr_list_6[i][2],
+                 val_classify_corr_list_6[i][3], val_classify_corr_list_6[i][4]])
+        df2 = pd.DataFrame(data=All_classify_list,
+                           columns=['Cor[Train]', 'ISC[Train]', 'Noi[Train]', 'Nor[Train]', 'Vis[Train]',
+                                    'Cor[UDDS]', 'ISC[UDDS]', 'Noi[UDDS]', 'Nor[UDDS]', 'Vis[UDDS]',
+                                    'Cor[FUDS]', 'ISC[FUDS]', 'Noi[FUDS]', 'Nor[FUDS]', 'Vis[FUDS]',
+                                    'Cor[US06]', 'ISC[US06]', 'Noi[US06]', 'Nor[US06]', 'Vis[US06]'])
+
+        save_path2 = f'./Result_csv/{args.model}/{args.select_condition}_Res_Classify_{count}.csv'
+        df2.to_csv(save_path2, index=False)
+        print(f"Successfully Results saved to {save_path2}")
 

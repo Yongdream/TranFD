@@ -123,7 +123,11 @@ def Get_Data(path):  # 获取指定路径的原始数据、相关系数及压差
     data_diff = np.array(data_diff)
     diff_max = np.max(data_diff)
     data = data[win:]  # 由于计算了相关系数截取了时间窗，因此数据长度截短
+
     data_feature = np.array([data, data_corr, data_diff])
+
+    # 消融实验！特征工程 归一化也得修改一下
+    # data_feature = np.array([data])
 
     All_list = []
     for i in range(0, 1000):

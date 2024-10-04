@@ -30,13 +30,9 @@ def Read_Cut_and_Save(path, win, U_max, U_min, corr_min, diff_max, step, filenam
     Condition = ["FUDS", "UDDS", "US06"]  # 工况词典
     Fault = ["Cor", "Isc", "Noi", "Nor", "Vis"]  # 相关性/微短路/噪声/正常/粘滞
     for i in range(0, data.shape[1] - win, step):
-        if "Vis" in path:
+        if (0 < i < 300) or (1100 < i < 1300) or (2100 < i < 2300) or (3100 < i < 3300) or (4100 < i < 4300) or (5100 < i < 5300):
             data_cut = data[:, i:i + win, :]
             Data_Cut_Saved_Npy(data_cut, path, Condition, Fault, i, win, filename)
-        else:
-            if (0 < i < 300) or (1100 < i < 1300) or (2100 < i < 2300) or (3100 < i < 3300) or (4100 < i < 4300) or (5100 < i < 5300):
-                data_cut = data[:, i:i + win, :]
-                Data_Cut_Saved_Npy(data_cut, path, Condition, Fault, i, win, filename)
 
 def del_files(dir_path):
     if os.path.isfile(dir_path):
@@ -56,15 +52,17 @@ if __name__ == '__main__':
     win = 300
     Condition_d = ["FUDS", "UDDS", "US06"]  # 工况词典
     Fault_d = ["Cor", "Isc", "Noi", "Nor", "Vis"]
-    Condition_selected = "US06"
-    Dst_path = "../Cut_Npy/" + Condition_selected + "/"
-    del_files(Dst_path)  # 清除原有数据
-    print("Clean ok!")
-    U_max, U_min, corr_min, diff_max = 4.3, 3.0, 0.0, 0.85  # 统一标准化参数
-    Origin_path = "../Npy/" + Condition_selected + "/"
-    for fault_index, Fault_name in enumerate(Fault_d):
-        dst_dir = Origin_path + Fault_name + "/"
-        FILE_list = os.listdir(dst_dir)
-        for filename_index, File_name in enumerate(FILE_list):
-            path = dst_dir + File_name
-            Read_Cut_and_Save(path, win, U_max, U_min, corr_min, diff_max, step=5, filename=File_name)
+
+    for Condition_selected in Condition_d:  # 循环每个工况
+        Dst_path = "../Cut_Npy/" + Condition_selected + "/"
+
+        del_files(Dst_path)  # 清除原有数据
+        print("Clean ok!")
+        U_max, U_min, corr_min, diff_max = 4.3, 3.0, 0.0, 0.85  # 统一标准化参数
+        Origin_path = "../Npy/" + Condition_selected + "/"
+        for fault_index, Fault_name in enumerate(Fault_d):
+            dst_dir = Origin_path + Fault_name + "/"
+            FILE_list = os.listdir(dst_dir)
+            for filename_index, File_name in enumerate(FILE_list):
+                path = dst_dir + File_name
+                Read_Cut_and_Save(path, win, U_max, U_min, corr_min, diff_max, step=5, filename=File_name)
