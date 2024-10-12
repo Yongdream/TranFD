@@ -119,14 +119,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Training script with command line arguments')
     parser.add_argument('--select_condition', type=str, choices=['UDDS', 'FUDS', 'US06'], default='FUDS',
                         help='Choose the source domain')
-    parser.add_argument('--model', type=str, choices=['SPP', 'Conv', 'Vit'], default='Conv',
+    parser.add_argument('--model', type=str, choices=['SPP', 'Conv', 'Vit'], default='SPP',
                         help='Choose which model to use')
     parser.add_argument('--save_model', action='store_true', help='Save model after training')
     parser.add_argument('--save_res', action='store_true', help='Save results to CSV file')
-    parser.add_argument('--n_epochs', type=int, default=50, help='Number of epochs')
+    parser.add_argument('--n_epochs', type=int, default=100, help='Number of epochs')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='Learning rate')
     parser.add_argument('--batch_size', type=int, default=32, help='Batch size')
-    parser.add_argument('--counts', type=int, default=32, help=' ')
+    parser.add_argument('--counts', type=int, default=1005, help=' ')
     return parser.parse_args()
 
 

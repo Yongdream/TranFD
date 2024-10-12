@@ -63,7 +63,7 @@ class SELF(nn.Module):
         self.cnn1 = nn.Conv2d(3, 16, (10, 1))  # 对比实验修改首个通道数即可
         self.cnn2 = nn.Conv2d(16, 32, (10, 1))
 
-        self.spp = SPPLayer(num_levels=3)
+        self.spp = SPPLayer(num_levels=3, pool_type='max_pool')
 
         self.lin1 = nn.Linear(448, 1000)
         self.dropout1 = nn.Dropout(0.4)
